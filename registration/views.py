@@ -565,3 +565,28 @@ def semester_view(request):
 def logout_view(request):
     logout(request)
     return redirect('/')
+
+##############Teacher upload notes########
+def notes_upload(request):
+    if request.method == 'POST':
+        form = NoteForm(request.POST, request.FILES, request=request)
+        if form.is_valid():
+            notes = form.save(commit=False)
+            notes.user = request.user  # Set the user before saving
+            notes.save()
+            return redirect('notes-view')
+    else:
+        form = NoteForm(request=request)
+    return render(request, 'teacher/notes_upload.html', {'form': form})
+
+def notes_view(request):
+    data = Note.objects.filter(user=request.user)
+    return render(request,'teacher/notes_view.html',{'data':data})
+
+################Student notes##############
+def notes_views(request):
+    sub = Subject.objects.filter(course=request.user.course)
+    print(sub,'ssss')
+    data = Note.objects.filter(subject__in=sub)
+    print(data)
+    return render(request,'student/notes_view.html',{'data':data})

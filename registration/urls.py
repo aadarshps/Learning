@@ -59,6 +59,9 @@ urlpatterns = [
     path('subject_list/<int:id>/',views.subject_list,name='subject_list'),
     path('ajax/load-subject/', views.load_subject, name='ajax_load_subject'),  # AJAX
 
+    path('notes-upload/',views.notes_upload,name='notes-upload'),
+    path('notes-view/',views.notes_view,name='notes-view'),
+    path('notes-view-st/',views.notes_views,name='notes-view-st'),
 
 
 

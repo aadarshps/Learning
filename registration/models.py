@@ -35,6 +35,7 @@ class RtUser(AbstractUser):
     type = models.IntegerField(null=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE,null=True)
     rollno = models.IntegerField(null=True)
+    batch = models.CharField(max_length=20,null=True)
 
 
 class ExamSchedule(models.Model):
@@ -89,6 +90,11 @@ class Result(models.Model):
     exam = models.ForeignKey(Exam, on_delete=models.CASCADE, related_name='result')
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     total_marks = models.IntegerField(default=0)
+
+class Note(models.Model):
+    user = models.ForeignKey(RtUser,on_delete=models.CASCADE)
+    subject = models.ForeignKey(Subject,on_delete=models.CASCADE)
+    file = models.FileField(upload_to='notes/')
 # from django.utils.timezone import utc
 # from datetime import datetime, time
 

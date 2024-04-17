@@ -40,6 +40,10 @@ class TeacherUpdate(UserCreationForm):
         # fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'address', 'email', 'course',)
         fields = ('first_name', 'last_name', 'address', 'email', 'course',)
 
+BATCH_CHOICES = [
+    ('Morning batch', 'Morning batch'),
+    ('Afternoon batch', 'Afternoon batch'),
+]
 
 class SUserCreationForm(UserCreationForm):
     username = forms.CharField()
@@ -47,10 +51,11 @@ class SUserCreationForm(UserCreationForm):
     password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput, )
     email = forms.CharField(validators=[
         RegexValidator(regex='^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$', message='Please Enter a Valid Email')])
+    batch = forms.ChoiceField(choices=BATCH_CHOICES)
 
     class Meta(UserCreationForm.Meta):
         model = RtUser
-        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'address', 'email', 'course', 'rollno',)
+        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'address', 'email', 'course', 'batch','rollno',)
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -76,10 +81,11 @@ class StudentUpdate(UserCreationForm):
     # password2 = forms.CharField(label='Confirm Password', widget=forms.PasswordInput, )
     email = forms.CharField(validators=[
         RegexValidator(regex='^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$', message='Please Enter a Valid Email')])
+    batch = forms.ChoiceField(choices=BATCH_CHOICES)
 
     class Meta(UserCreationForm.Meta):
         model = RtUser
-        fields = ('first_name', 'last_name', 'address', 'email', 'course', 'rollno',)
+        fields = ('first_name', 'last_name', 'address', 'email', 'course','batch', 'rollno',)
 
 
 class CourseBank(ModelForm):
@@ -131,3 +137,18 @@ class SubjectForm(forms.ModelForm):
     class Meta:
         model = Subject
         fields = '__all__'
+
+
+
+class NoteForm(forms.ModelForm):
+    class Meta:
+        model = Note
+        fields = ['subject','file']
+    
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request', None)
+        super(NoteForm, self).__init__(*args, **kwargs)
+        if request:
+            self.fields['subject'].queryset = Subject.objects.filter(course=request.user.course)
+
+        
